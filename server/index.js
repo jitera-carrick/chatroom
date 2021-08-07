@@ -10,8 +10,26 @@ import chatRoomRouter from "../routes/chatRoom.js";
 // middlewares
 // import { decode } from "./middlewares/jwt.js";
 import "../config/mongo.js";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { Server } from "socket.io";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
+/** Create HTTP server. */
+const server = http.createServer(app);
+const io = new Server(server);
+io.on("connection", (socket) => {
+  console.log("a user connected");
+  socket.on("disconnect", () => {
+    console.log("user disconnected");
+  });
+  socket.on("chat message", (msg) => {
+    io.emit("chat message", msg);
+  });
+});
 
 /** Get port from environment and store in Express. */
 const port = process.env.PORT || "3000";
@@ -26,6 +44,11 @@ app.use("/users", userRouter);
 app.use("/room", chatRoomRouter);
 // app.use("/delete", deleteRouter);
 
+/* client */
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/index.html");
+});
+
 /** catch 404 and forward to error handler */
 app.use("*", (req, res) => {
   return res.status(404).json({
@@ -35,7 +58,7 @@ app.use("*", (req, res) => {
 });
 
 /** Create HTTP server. */
-const server = http.createServer(app);
+// const server = http.createServer(app);
 /** Listen on provided port, on all network interfaces. */
 server.listen(port);
 /** Event listener for HTTP server "listening" event. */
