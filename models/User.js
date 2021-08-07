@@ -1,13 +1,9 @@
 import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
 
 const userSchema = new mongoose.Schema(
   {
-    // _id: {
-    //   type: String,
-    //   default: () => uuidv4().replace(/\-/g, ""),
-    // },
     name: String,
+    roomId: String,
   },
   {
     timestamps: true, // for createdAt and updatedAt
@@ -15,9 +11,9 @@ const userSchema = new mongoose.Schema(
   }
 );
 
-userSchema.statics.createUser = async function (name) {
+userSchema.statics.createUser = async function (name, roomId) {
   try {
-    const user = await this.create({ name });
+    const user = await this.create({ name, roomId });
     return user;
   } catch (error) {
     throw error;
