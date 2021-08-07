@@ -13,6 +13,7 @@ import "../config/mongo.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { Server } from "socket.io";
+import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -45,9 +46,11 @@ app.use("/room", chatRoomRouter);
 // app.use("/delete", deleteRouter);
 
 /* client */
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/index.html");
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/index.html"));
+// });
+
+app.use(express.static(path.join(__dirname, "../client/dist"))); //to serve files, not just html
 
 /** catch 404 and forward to error handler */
 app.use("*", (req, res) => {
