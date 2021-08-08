@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
 import { useHistory, useParams } from "react-router-dom";
 import "regenerator-runtime/runtime"; // import this to use async/await with parcel
+import clsx from "clsx";
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -35,22 +36,25 @@ const useStyles = makeStyles((theme) => ({
     height: "90%",
     display: "flex",
     flexDirection: "column",
-    // alignItems: "flex-start",
   },
   chatBox: {
     height: "10%",
   },
-  chat: {
+  white: {
     color: "white",
   },
+  black: {
+    color: "black",
+  },
   chatContainer: {
-    background: "#5db075",
+    background: "#f6f6f6",
     borderRadius: 10,
     borderRadius: 10,
     height: "50px",
     width: "50%",
   },
   toRight: {
+    background: "#5db075",
     marginLeft: "auto",
   },
 }));
@@ -66,7 +70,6 @@ function reducer(state, action) {
 
 const Room = ({ socket }) => {
   const { username } = useParams();
-  const history = useHistory();
   const classes = useStyles();
   const [message, setMessage] = useState("");
 
@@ -90,10 +93,17 @@ const Room = ({ socket }) => {
             m={2}
             p={2}
             mr={0}
-            className={`${classes.chatContainer} ${classes.toRight}`}
+            className={clsx(
+              classes.chatContainer,
+              username === chat.username ? classes.toRight : ""
+            )}
           >
-            {username === chat.username && <div style={{ flex: 1 }}></div>}
-            <Typography align="left" className={classes.chat}>
+            <Typography
+              align="left"
+              className={
+                username === chat.username ? classes.white : classes.black
+              }
+            >
               {chat.message}
             </Typography>
           </Box>
