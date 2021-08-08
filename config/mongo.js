@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const CONNECTION_URL = `mongodb+srv://viet:viet@cluster0.jxa3z.mongodb.net/chatroom`;
+const CONNECTION_URL = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.jxa3z.mongodb.net/chatroom`;
 
 mongoose.connect(CONNECTION_URL, {
   useNewUrlParser: true,
