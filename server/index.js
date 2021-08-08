@@ -3,18 +3,15 @@ import express from "express";
 import logger from "morgan";
 import cors from "cors";
 // routes
-// import indexRouter from "./routes/index.js";
 import userRouter from "../routes/user.js";
 import chatRoomRouter from "../routes/chatRoom.js";
-// import deleteRouter from "../routes/delete.js";
-// middlewares
-// import { decode } from "./middlewares/jwt.js";
 import "../config/mongo.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { Server } from "socket.io";
 import UserModel from "../models/User.js";
 import path from "path";
+import User from "../models/User.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -22,31 +19,22 @@ const __dirname = dirname(__filename);
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server);
-let users = [];
+
 io.on("connection", (socket) => {
-  console.log("a user connected");
-  socket.on("disconnect", () => {
-    //TODO: remove user from users array
-    // const user = users.find((user) => user.socketid === socket.id);
-    // if (!user) {
-    //   console.error("cannot find user to delete!");
-    //   return;
-    // }
-    // const user = UserModel.findUser({})
-    // UserModel.deleteUser(user.username, user.roomId);
-    // users = users.filter((user) => user.socketid === socket.id);
-    // console.log("removed user with socketid: ", socket.id);
+  socket.on("disconnect", async () => {
+    await UserModel.deleteUser({ socketId: socket.id });
   });
-  socket.on("joinRoom", ({ username, roomId }) => {
-    users.push({ username, roomId, socketid: socket.id });
+  socket.on("joinRoom", async ({ username, roomId }) => {
+    //update socketid to user
+    await UserModel.findAndUpdate(username, roomId, socket.id);
+
     socket.join(roomId); //create a room with roomId
     console.log("joined room: ", roomId);
   });
-  socket.on("message", (msg) => {
-    console.log(msg);
-    const user = users.find((user) => user.socketid === socket.id);
+  socket.on("message", async (msg) => {
+    const user = await UserModel.findUser(socket.id);
     if (!user) {
-      console.error("Cannot find user with matching socket id");
+      console.error("Cannot find user with matching socket id", socket.id);
       return;
     }
     msg.username = user.username;
@@ -62,15 +50,8 @@ app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// app.use("/", indexRouter);
 app.use("/api/users", userRouter);
 app.use("/api/room", chatRoomRouter);
-// app.use("/delete", deleteRouter);
-
-/* client */
-// app.get("/", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/index.html"));
-// });
 
 app.use(express.static(path.join(__dirname, "../client/dist"))); //to serve files, not just html
 
@@ -82,8 +63,6 @@ app.use("*", (req, res) => {
   });
 });
 
-/** Create HTTP server. */
-// const server = http.createServer(app);
 /** Listen on provided port, on all network interfaces. */
 server.listen(port);
 /** Event listener for HTTP server "listening" event. */
