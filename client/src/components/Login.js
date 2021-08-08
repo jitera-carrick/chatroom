@@ -100,7 +100,7 @@ const Login = ({ socket }) => {
               }
 
               try {
-                await axios.post("http://localhost:3000/api/users", {
+                await axios.post(`${document.location.origin}/api/users`, {
                   name: username,
                   roomId,
                 });

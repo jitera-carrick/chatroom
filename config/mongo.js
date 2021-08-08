@@ -1,7 +1,4 @@
 import mongoose from "mongoose";
-import config from "./index.js";
-
-// const CONNECTION_URL = `mongodb://${config.db.url}/${config.db.name}`;
 
 const CONNECTION_URL = `mongodb+srv://viet:viet@cluster0.jxa3z.mongodb.net/chatroom`;
 
