@@ -88,24 +88,30 @@ const Room = ({ socket }) => {
     <Container className={classes.container}>
       <Box className={classes.conversation}>
         {state.messages.map((chat) => (
-          <Box
-            // key={chat.username}
-            m={2}
-            p={2}
-            mr={0}
-            className={clsx(
-              classes.chatContainer,
-              username === chat.username ? classes.toRight : ""
+          <Box m={2}>
+            {chat.username !== username && (
+              <Box>
+                <Typography>{chat.username}</Typography>
+              </Box>
             )}
-          >
-            <Typography
-              align="left"
-              className={
-                username === chat.username ? classes.white : classes.black
-              }
+            <Box
+              // key={chat.username}
+              p={2}
+              mr={0}
+              className={clsx(
+                classes.chatContainer,
+                username === chat.username ? classes.toRight : ""
+              )}
             >
-              {chat.message}
-            </Typography>
+              <Typography
+                align="left"
+                className={
+                  username === chat.username ? classes.white : classes.black
+                }
+              >
+                {chat.message}
+              </Typography>
+            </Box>
           </Box>
         ))}
       </Box>
