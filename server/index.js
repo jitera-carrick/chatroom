@@ -13,22 +13,44 @@ import "../config/mongo.js";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { Server } from "socket.io";
+import UserModel from "../models/User.js";
 import path from "path";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const app = express();
-/** Create HTTP server. */
 const server = http.createServer(app);
 const io = new Server(server);
+let users = [];
 io.on("connection", (socket) => {
   console.log("a user connected");
   socket.on("disconnect", () => {
-    console.log("user disconnected");
+    //TODO: remove user from users array
+    // const user = users.find((user) => user.socketid === socket.id);
+    // if (!user) {
+    //   console.error("cannot find user to delete!");
+    //   return;
+    // }
+    // const user = UserModel.findUser({})
+    // UserModel.deleteUser(user.username, user.roomId);
+    // users = users.filter((user) => user.socketid === socket.id);
+    // console.log("removed user with socketid: ", socket.id);
   });
-  socket.on("chat message", (msg) => {
-    io.emit("chat message", msg);
+  socket.on("joinRoom", ({ username, roomId }) => {
+    users.push({ username, roomId, socketid: socket.id });
+    socket.join(roomId); //create a room with roomId
+    console.log("joined room: ", roomId);
+  });
+  socket.on("message", (msg) => {
+    console.log(msg);
+    const user = users.find((user) => user.socketid === socket.id);
+    if (!user) {
+      console.error("Cannot find user with matching socket id");
+      return;
+    }
+    msg.username = user.username;
+    io.to(user.roomId).emit("newMessage", msg); // emit message to all users in the room
   });
 });
 
@@ -41,8 +63,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
 // app.use("/", indexRouter);
-app.use("/users", userRouter);
-app.use("/room", chatRoomRouter);
+app.use("/api/users", userRouter);
+app.use("/api/room", chatRoomRouter);
 // app.use("/delete", deleteRouter);
 
 /* client */

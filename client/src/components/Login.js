@@ -5,7 +5,9 @@ import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import { makeStyles } from "@material-ui/core/styles";
 import Box from "@material-ui/core/Box";
-import history from "history";
+import { useHistory } from "react-router-dom";
+import axios from "axios";
+import "regenerator-runtime/runtime"; // import this to use async/await with parcel
 
 const useStyles = makeStyles((theme) => ({
   root: {},
@@ -29,8 +31,11 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-const Login = () => {
+const Login = ({ socket }) => {
   const classes = useStyles();
+  const history = useHistory();
+  const [username, setUsername] = useState("");
+  const [roomId, setRoomId] = useState("");
 
   return (
     <>
@@ -47,6 +52,10 @@ const Login = () => {
             className={classes.textField}
             placeholder="Username"
             InputProps={{ disableUnderline: true }}
+            value={username}
+            onChange={(e) => {
+              setUsername(e.target.value);
+            }}
           ></TextField>
         </Box>
         <Box m={2}>
@@ -55,13 +64,29 @@ const Login = () => {
             className={classes.textField}
             placeholder="RoomID"
             InputProps={{ disableUnderline: true }}
+            value={roomId}
+            onChange={(e) => {
+              setRoomId(e.target.value);
+            }}
           ></TextField>
         </Box>
         <Box m={2} mt={10}>
           <Button
             className={classes.button}
-            onClick={() => {
-              history.push("/room");
+            onClick={async () => {
+              //TODO: request to create user/join room first
+              const res = await axios.post("http://localhost:3000/api/users", {
+                name: username,
+                roomId,
+              });
+
+              if (!socket) {
+                console.error("socket is not defined!");
+                return;
+              }
+              socket.emit("joinRoom", { username, roomId });
+              history.push(`/room/${roomId}/${username}`);
+              console.log(history);
             }}
           >
             JOIN

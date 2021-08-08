@@ -18,8 +18,9 @@ export default {
 
       const { name, roomId } = req.body;
       const room = await RoomModel.findOne({ roomId });
-      if (!room) await RoomModel.createRoom(roomId);
-      else {
+      if (!room) {
+        await RoomModel.createRoom(roomId);
+      } else {
         const conflictUser = await UserModel.findOne({ name, roomId });
         if (conflictUser)
           return res.status(500).json({

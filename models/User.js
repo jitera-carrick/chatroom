@@ -20,4 +20,21 @@ userSchema.statics.createUser = async function (name, roomId) {
   }
 };
 
+userSchema.statics.deleteUser = async function (name, roomId) {
+  try {
+    await this.delete({ name, roomId });
+    console.log("deleted user from database", name, roomId);
+  } catch (error) {
+    throw error;
+  }
+};
+
+userSchema.statics.findUser = async function (name, roomId) {
+  try {
+    await this.find({ name, roomId });
+  } catch (error) {
+    throw error;
+  }
+};
+
 export default mongoose.model("User", userSchema);
