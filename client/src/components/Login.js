@@ -29,6 +29,9 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     fontWeight: 500,
   },
+  error: {
+    color: "red",
+  },
 }));
 
 const Login = ({ socket }) => {
@@ -36,6 +39,7 @@ const Login = ({ socket }) => {
   const history = useHistory();
   const [username, setUsername] = useState("");
   const [roomId, setRoomId] = useState("");
+  const [errors, setErrors] = useState([]);
 
   return (
     <>
@@ -70,15 +74,40 @@ const Login = ({ socket }) => {
             }}
           ></TextField>
         </Box>
+        {errors.length > 0 &&
+          errors.map((error) => (
+            <Box m={2}>
+              <Typography className={classes.error}>{error}</Typography>
+            </Box>
+          ))}
         <Box m={2} mt={10}>
           <Button
             className={classes.button}
             onClick={async () => {
-              //TODO: request to create user/join room first
-              const res = await axios.post("http://localhost:3000/api/users", {
-                name: username,
-                roomId,
-              });
+              setErrors([]);
+
+              let temp = [];
+              if (!username.length) {
+                temp.push("Username cannot be empty!");
+              }
+              if (!roomId.length) {
+                temp.push("RoomID cannot be empty!");
+              }
+
+              if (temp.length) {
+                setErrors(temp);
+                return;
+              }
+
+              try {
+                await axios.post("http://localhost:3000/api/users", {
+                  name: username,
+                  roomId,
+                });
+              } catch (e) {
+                setErrors(["Username already taken!"]);
+                return;
+              }
 
               if (!socket) {
                 console.error("socket is not defined!");
@@ -86,7 +115,6 @@ const Login = ({ socket }) => {
               }
               socket.emit("joinRoom", { username, roomId });
               history.push(`/room/${roomId}/${username}`);
-              console.log(history);
             }}
           >
             JOIN

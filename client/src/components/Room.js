@@ -55,8 +55,7 @@ const useStyles = makeStyles((theme) => ({
   },
 }));
 
-let registered = false;
-
+//declare reducer here to avoid being called multiple times
 function reducer(state, action) {
   if (action.type === "NEW_MESSAGE") {
     const temp = { ...state };
@@ -75,16 +74,11 @@ const Room = ({ socket }) => {
 
   useEffect(() => {
     socket.on("newMessage", (message) => {
-      console.log("on newMessage");
-
       dispatch({ type: "NEW_MESSAGE", message });
     });
     return () => {
       socket.off("newMessage");
-      //   socket.close();
     };
-
-    //TODO: still need to handle unsubscription
   }, [socket, dispatch]);
 
   return (
