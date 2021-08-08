@@ -6,7 +6,7 @@
   "scripts": {
     "start:server": "node server/index.js",
     "build-client": "parcel build client/src/index.html --out-dir client/dist",
-    "start": "npm run build-client & nodemon server/index.js",
+    "start": "npm run build-client & node server/index.js",
     "dev": "npm run dev-client & cross-env ENV='development' nodemon server/index.js",
     "dev-client": "parcel watch client/src/index.html --out-dir client/dist"
   },
