@@ -55,13 +55,17 @@ app.use("/api/room", chatRoomRouter);
 
 app.use(express.static(path.join(__dirname, "../client/dist"))); //to serve files, not just html
 
-/** catch 404 and forward to error handler */
-app.use("*", (req, res) => {
-  return res.status(404).json({
-    success: false,
-    message: "API endpoint doesnt exist",
-    debug: JSON.stringify(req),
-  });
+// /** catch 404 and forward to error handler */
+// app.use("*", (req, res) => {
+//   return res.status(404).json({
+//     success: false,
+//     message: "API endpoint doesnt exist",
+//     debug: JSON.stringify(req),
+//   });
+// });
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../client/src/index.html"));
 });
 
 /** Listen on provided port, on all network interfaces. */
