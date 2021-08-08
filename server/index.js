@@ -1,7 +1,6 @@
 import http from "http";
 import express from "express";
 import logger from "morgan";
-import cors from "cors";
 // routes
 import userRouter from "../routes/user.js";
 import chatRoomRouter from "../routes/chatRoom.js";
@@ -11,7 +10,6 @@ import { dirname } from "path";
 import { Server } from "socket.io";
 import UserModel from "../models/User.js";
 import path from "path";
-import User from "../models/User.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -55,18 +53,18 @@ app.use("/api/room", chatRoomRouter);
 
 app.use(express.static(path.join(__dirname, "../client/dist"))); //to serve files, not just html
 
-// /** catch 404 and forward to error handler */
-// app.use("*", (req, res) => {
-//   return res.status(404).json({
-//     success: false,
-//     message: "API endpoint doesnt exist",
-//     debug: JSON.stringify(req),
-//   });
-// });
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/src/index.html"));
+/** catch 404 and forward to error handler */
+app.use("*", (req, res) => {
+  return res.status(404).json({
+    success: false,
+    message: "API endpoint doesnt exist",
+    debug: JSON.stringify(req),
+  });
 });
+
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(__dirname, "../client/src/index.html"));
+// });
 
 /** Listen on provided port, on all network interfaces. */
 server.listen(port);

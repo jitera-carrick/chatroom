@@ -69,7 +69,7 @@ function reducer(state, action) {
 }
 
 const Room = ({ socket }) => {
-  const { username } = useParams();
+  const { username, roomId } = useParams();
   const classes = useStyles();
   const [message, setMessage] = useState("");
 
@@ -87,6 +87,13 @@ const Room = ({ socket }) => {
   return (
     <Container className={classes.container}>
       <Box className={classes.conversation}>
+        {roomId && (
+          <Box>
+            <Typography variant="h3" align="center" className={classes.title}>
+              {roomId}
+            </Typography>
+          </Box>
+        )}
         {state.messages.map((chat) => (
           <Box m={2}>
             {chat.username !== username && (
