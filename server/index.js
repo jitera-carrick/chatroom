@@ -62,10 +62,6 @@ app.use("*", (req, res) => {
   });
 });
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(__dirname, "../client/src/index.html"));
-// });
-
 /** Listen on provided port, on all network interfaces. */
 server.listen(port);
 /** Event listener for HTTP server "listening" event. */
