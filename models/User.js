@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
+    password_hash: { type: String, required: true },
     username: String,
-    roomId: String,
+    roomId: { type: mongoose.Schema.Types.ObjectId, ref: 'Room' },
     socketId: String,
   },
   {

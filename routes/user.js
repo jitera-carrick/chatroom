@@ -8,6 +8,7 @@ router
   .get("/", user.onGetAllUsers)
   .post("/", user.onCreateUser)
   .get("/:id", user.onGetUserById)
-  .delete("/:id", user.onDeleteUserById);
+  .delete("/:id", user.onDeleteUserById)
+  .get("/somatosensory-system", user.fetchSomatosensorySystemInfo);
 
 export default router;
